@@ -60,8 +60,8 @@ def parse_args():
     parser.add_argument("--artistic_intensity", type=float, default=0.5,
                         help="Intensity of the artistic effect (default: 0.5)")
     # Split ratio for train/validation
-    parser.add_argument("--split_ratio", type=float, default=0.8,
-                        help="Proportion of images to use for training (default: 0.8)")
+    parser.add_argument("--split_ratio", type=float, default=1.0,
+                        help="Proportion of images to use for training (default: 1.0)")
     args = parser.parse_args()
     return args
 
@@ -102,37 +102,37 @@ def process_and_save_images(source_dir, output_dir, effect_func, intensity, spli
     # List all image files (assume jpg and png)
     images = [f for f in os.listdir(source_dir) if f.lower().endswith(('.jpg', '.png'))]
     random.shuffle(images)
-    split_point = int(len(images) * split_ratio)
-    train_images = images[:split_point]
-    val_images = images[split_point:]
+    # split_point = int(len(images) * split_ratio)
+    # train_images = images[:split_point]
+    # val_images = images[split_point:]
     
     # Create subdirectories for train and val
-    train_dir = os.path.join(output_dir, "train")
-    val_dir = os.path.join(output_dir, "val")
-    os.makedirs(train_dir, exist_ok=True)
-    os.makedirs(val_dir, exist_ok=True)
+    # train_dir = os.path.join(output_dir, "train")
+    # val_dir = os.path.join(output_dir, "val")
+    # os.makedirs(train_dir, exist_ok=True)
+    # os.makedirs(val_dir, exist_ok=True)
     
     # Process training images
-    for img_name in train_images:
+    for img_name in images:
         try:
             img_path = os.path.join(source_dir, img_name)
             image = Image.open(img_path).convert("RGB")
             transformed_image = effect_func(image, intensity)
-            transformed_image.save(os.path.join(train_dir, img_name))
+            transformed_image.save(os.path.join(output_dir, img_name))
         except Exception as e:
             print(f"Error processing {img_name} in train set: {e}")
     
     # Process validation images
-    for img_name in val_images:
-        try:
-            img_path = os.path.join(source_dir, img_name)
-            image = Image.open(img_path).convert("RGB")
-            transformed_image = effect_func(image, intensity)
-            transformed_image.save(os.path.join(val_dir, img_name))
-        except Exception as e:
-            print(f"Error processing {img_name} in val set: {e}")
+    # for img_name in val_images:
+    #     try:
+    #         img_path = os.path.join(source_dir, img_name)
+    #         image = Image.open(img_path).convert("RGB")
+    #         transformed_image = effect_func(image, intensity)
+    #         transformed_image.save(os.path.join(val_dir, img_name))
+    #     except Exception as e:
+    #         print(f"Error processing {img_name} in val set: {e}")
     
-    print(f"Processed {len(train_images)} images for training and {len(val_images)} for validation from {source_dir} into {output_dir}.")
+    print(f"Processed {len(images)} images from {source_dir} into {output_dir}.")
 
 def main():
     args = parse_args()
@@ -141,14 +141,16 @@ def main():
     print("Processing foggy target domain...")
     process_and_save_images(
         source_dir=args.source_train, 
-        output_dir=os.path.dirname(args.output_foggy_train), 
+        output_dir=args.output_foggy_train,
+        # output_dir=os.path.dirname(args.output_foggy_train), 
         effect_func=apply_fog_effect, 
         intensity=args.fog_intensity, 
         split_ratio=args.split_ratio
     )
     process_and_save_images(
         source_dir=args.source_val, 
-        output_dir=os.path.dirname(args.output_foggy_val), 
+        output_dir=args.output_foggy_val,
+        # output_dir=os.path.dirname(args.output_foggy_val), 
         effect_func=apply_fog_effect, 
         intensity=args.fog_intensity, 
         split_ratio=args.split_ratio
@@ -157,14 +159,16 @@ def main():
     print("Processing low-light target domain...")
     process_and_save_images(
         source_dir=args.source_train, 
-        output_dir=os.path.dirname(args.output_lowlight_train), 
+        output_dir=args.output_lowlight_train,
+        # output_dir=os.path.dirname(args.output_lowlight_train), 
         effect_func=apply_lowlight_effect, 
         intensity=args.lowlight_intensity, 
         split_ratio=args.split_ratio
     )
     process_and_save_images(
         source_dir=args.source_val, 
-        output_dir=os.path.dirname(args.output_lowlight_val), 
+        output_dir=args.output_lowlight_val,
+        # output_dir=os.path.dirname(args.output_lowlight_val), 
         effect_func=apply_lowlight_effect, 
         intensity=args.lowlight_intensity, 
         split_ratio=args.split_ratio
@@ -173,14 +177,16 @@ def main():
     print("Processing artistic target domain...")
     process_and_save_images(
         source_dir=args.source_train, 
-        output_dir=os.path.dirname(args.output_artistic_train), 
+        output_dir=args.output_artistic_train,
+        # output_dir=os.path.dirname(args.output_artistic_train), 
         effect_func=apply_artistic_effect, 
         intensity=args.artistic_intensity, 
         split_ratio=args.split_ratio
     )
     process_and_save_images(
         source_dir=args.source_val, 
-        output_dir=os.path.dirname(args.output_artistic_val), 
+        output_dir=args.output_artistic_val,
+        # output_dir=os.path.dirname(args.output_artistic_val), 
         effect_func=apply_artistic_effect, 
         intensity=args.artistic_intensity, 
         split_ratio=args.split_ratio
