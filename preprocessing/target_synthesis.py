@@ -22,6 +22,7 @@ Example:
       --fog_intensity 0.5 \
       --lowlight_intensity 0.5 \
       --artistic_intensity 0.5
+      ----split_ratio 1.0
 """
 
 import os
